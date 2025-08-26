@@ -5,3 +5,7 @@ plotly
 pyarrow
 python-dotenv
 PyYAML
+ensure
+python-box
+
+-e .

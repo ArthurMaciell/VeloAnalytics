@@ -1,0 +1,126 @@
+# Defines the expected schema (columns and data types) for each raw CSV file.
+# This acts as a contract to ensure data quality and consistency during transformation.
+
+COLUMNS:
+  Addresses:
+    ADDRESSID: str
+    CITY: str
+    POSTALCODE: str
+    STREET: str
+    BUILDING: str
+    COUNTRY: str
+    REGION: str
+    ADDRESSTYPE: str
+    VALIDITY_STARTDATE: str # Will be converted to datetime
+    VALIDITY_ENDDATE: str   # Will be converted to datetime
+    LATITUDE: float64
+    LONGITUDE: float64
+
+  BusinessPartners:
+    PARTNERID: str
+    PARTNERROLE: str
+    EMAILADDRESS: str
+    PHONENUMBER: str
+    FAXNUMBER: str
+    WEBADDRESS: str
+    ADDRESSID: str
+    COMPANYNAME: str
+    LEGALFORM: str
+    CREATEDBY: str
+    CREATEDAT: str # Will be converted to datetime
+    CHANGEDBY: str
+    CHANGEDAT: str # Will be converted to datetime
+    CURRENCY: str
+
+  Employees:
+    EMPLOYEEID: str
+    NAME_FIRST: str
+    NAME_MIDDLE: str
+    NAME_LAST: str
+    NAME_INITIALS: str
+    SEX: str
+    LANGUAGE: str
+    PHONENUMBER: str
+    EMAILADDRESS: str
+    LOGINNAME: str
+    ADDRESSID: str
+    VALIDITY_STARTDATE: str # Will be converted to datetime
+    VALIDITY_ENDDATE: str   # Will be converted to datetime
+
+  ProductCategories:
+    PRODCATEGORYID: str
+    CREATEDBY: str
+    CREATEDAT: str # Will be converted to datetime
+
+  ProductCategoryText:
+    PRODCATEGORYID: str
+    LANGUAGE: str
+    SHORT_DESCR: str
+    MEDIUM_DESCR: str
+    LONG_DESCR: str
+
+  Products:
+    PRODUCTID: str
+    TYPECODE: str
+    PRODCATEGORYID: str
+    CREATEDBY: str
+    CREATEDAT: str   # Will be converted to datetime
+    CHANGEDBY: str
+    CHANGEDAT: str   # Will be converted to datetime
+    SUPPLIER_PARTNERID: str
+    TAXTARIFFCODE: str
+    QUANTITYUNIT: str
+    WEIGHTMEASURE: float64
+    WEIGHTUNIT: str
+    CURRENCY: str
+    PRICE: float64
+    WIDTH: float64
+    DEPTH: float64
+    HEIGHT: float64
+    DIMENSIONUNIT: str
+    PRODUCTPICURL: str
+
+  ProductTexts:
+    PRODUCTID: str
+    LANGUAGE: str
+    SHORT_DESCR: str
+    MEDIUM_DESCR: str
+    LONG_DESCR: str
+
+  SalesOrderItems:
+    SALESORDERID: str
+    SALESORDERITEM: str
+    PRODUCTID: str
+    NOTEID: str
+    CURRENCY: str
+    GROSSAMOUNT: float64
+    NETAMOUNT: float64
+    TAXAMOUNT: float64
+    ITEMATPSTATUS: str
+    OPITEMPOS: str
+    QUANTITY: int64
+    QUANTITYUNIT: str
+    DELIVERYDATE: str # Will be converted to datetime
+
+  SalesOrders:
+    SALESORDERID: str
+    CREATEDBY: str
+    CREATEDAT: str   # Will be converted to datetime
+    CHANGEDBY: str
+    CHANGEDAT: str   # Will be converted to datetime
+    FISCVARIANT: str
+    FISCALYEARPERIOD: str
+    NOTEID: str
+    PARTNERID: str
+    SALESORG: str
+    CURRENCY: str
+    GROSSAMOUNT: float64
+    NETAMOUNT: float64
+    TAXAMOUNT: float64
+    LIFECYCLESTATUS: str
+    BILLINGSTATUS: str
+    DELIVERYSTATUS: str
+
+TARGET_COLUMN:
+  # This section would be used for machine learning models,
+  # but we can leave it empty for this BI project.

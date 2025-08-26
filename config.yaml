@@ -1,0 +1,20 @@
+# Configuration for the project artifacts and data pipeline
+artifacts_root: artifacts
+
+# Configuration for the Data Ingestion stage
+data_ingestion:
+  root_dir: artifacts/data_ingestion
+  source_zip_file: BI Test.zip # Assumes the zip is in the project root
+  unzip_dir: artifacts/data_ingestion/unzipped_data
+
+# Configuration for the Data Validation stage
+data_validation:
+  root_dir: artifacts/data_validation
+  unzip_data_dir: artifacts/data_ingestion/unzipped_data
+  status_file: artifacts/data_validation/status.txt
+
+# Configuration for the main data pipeline directories
+data_pipeline:
+  raw_dir: data/01_raw
+  processed_dir: data/02_processed
+  presentation_dir: data/03_presentation

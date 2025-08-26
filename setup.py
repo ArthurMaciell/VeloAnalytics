@@ -3,23 +3,21 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
+__version__ = "0.0.1"
 
-__version__ = "0.0.0"
-
-REPO_NAME = "BIKES-SALES-BI"
-AUTHOR_USER_NAME = "ArthurMaciell"
-SRC_REPO = "BIKES-SALES-BI"
+REPO_NAME = "VeloAnalytics"
+AUTHOR_USER_NAME = "ArthurMaciell" 
+SRC_REPO = "VeloAnalytics" 
 AUTHOR_EMAIL = "arthur6325@gmail.com"
-
 
 setuptools.setup(
     name=SRC_REPO,
     version=__version__,
     author=AUTHOR_USER_NAME,
     author_email=AUTHOR_EMAIL,
-    description="A small python package for ml app",
+    description="A python package for the BI & Data Modelling challenge.",
     long_description=long_description,
-    long_description_content="text/markdown",
+    long_description_content_type="text/markdown",
     url=f"https://github.com/{AUTHOR_USER_NAME}/{REPO_NAME}",
     project_urls={
         "Bug Tracker": f"https://github.com/{AUTHOR_USER_NAME}/{REPO_NAME}/issues",
@@ -27,3 +25,5 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src")
 )
+
+
