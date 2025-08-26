@@ -1,1 +1,3 @@
-# Bikes-Sales-BI
+# VeloAnalytics - BI & Data Modelling Technical Challenge
+
+This repository contains the solution for the technical challenge...
