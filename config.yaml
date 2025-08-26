@@ -13,6 +13,13 @@ data_validation:
   unzip_data_dir: artifacts/data_ingestion/unzipped_data
   status_file: artifacts/data_validation/status.txt
 
+# Configuration for the Data Transformation stage
+data_transformation:
+  root_dir: artifacts/data_transformation
+  data_path: artifacts/data_ingestion/unzipped_data
+  # We will save the transformed data as parquet files for efficiency
+  output_path: data/02_processed 
+  
 # Configuration for the main data pipeline directories
 data_pipeline:
   raw_dir: data/01_raw

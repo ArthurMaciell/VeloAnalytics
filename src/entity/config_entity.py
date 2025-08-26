@@ -17,3 +17,12 @@ class DataValidationConfig:
     root_dir: Path
     unzip_data_dir: Path
     status_file: Path
+
+
+# --- Data Transformation Configuration Entity ---
+# This defines the structure for the data transformation configuration.
+@dataclass(frozen=True)
+class DataTransformationConfig:
+    root_dir: Path
+    data_path: Path
+    output_path: Path
