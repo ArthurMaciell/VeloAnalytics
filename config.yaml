@@ -18,8 +18,14 @@ data_transformation:
   root_dir: artifacts/data_transformation
   data_path: artifacts/data_ingestion/unzipped_data
   # We will save the transformed data as parquet files for efficiency
-  output_path: data/02_processed 
-  
+  output_path: data/02_processed
+
+# Configuration for the Data Modeling stage
+data_modeling:
+  root_dir: artifacts/data_modeling
+  data_path: data/02_processed # Input: clean data
+  output_path: data/03_presentation # Output: final fact and dimension tables
+
 # Configuration for the main data pipeline directories
 data_pipeline:
   raw_dir: data/01_raw

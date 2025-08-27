@@ -34,7 +34,8 @@ class DataTransformation:
                 
                 # Define schema and read csv
                 file_schema = self.schema.COLUMNS[file_name]
-                df = pd.read_csv(os.path.join(self.config.data_path, csv_file))
+                # --- FIX: Added encoding='latin1' to handle special characters ---
+                df = pd.read_csv(os.path.join(self.config.data_path, csv_file), encoding='latin1')
 
                 # Validate columns
                 validation_errors = []
