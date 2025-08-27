@@ -1,5 +1,5 @@
 from src.utils import read_yaml, create_directories
-from src.entity.config_entity import DataIngestionConfig, DataValidationConfig
+from src.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig
 from pathlib import Path
 
 class ConfigurationManager:
@@ -49,3 +49,18 @@ class ConfigurationManager:
             status_file=Path(config.status_file)
         )
         return data_validation_config
+    
+
+    def get_data_transformation_config(self) -> DataTransformationConfig:
+        """
+        Extracts the data transformation configuration from the main config file.
+        """
+        config = self.config.data_transformation
+        create_directories([Path(config.root_dir), Path(config.output_path)])
+
+        data_transformation_config = DataTransformationConfig(
+            root_dir=Path(config.root_dir),
+            data_path=Path(config.data_path),
+            output_path=Path(config.output_path)
+        )
+        return data_transformation_config
