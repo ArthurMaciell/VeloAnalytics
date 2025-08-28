@@ -27,7 +27,9 @@ Measures the total number of individual items sold.
 This is a key indicator of product volume and operational scale.
 
 **Calculation Logic (Pseudo-code):**
-
+'''bash
+Total Revenue = SUM(fact_sales[GROSSAMOUNT])
+'''
 
 ---
 
