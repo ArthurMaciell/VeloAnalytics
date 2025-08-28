@@ -26,3 +26,11 @@ class DataTransformationConfig:
     root_dir: Path
     data_path: Path
     output_path: Path
+
+# --- Data Modelling Configuration Entity ---
+# This defines the structure for the data modelling configuration.
+@dataclass(frozen=True)
+class DataModellingConfig:
+    root_dir: Path
+    processed_data_path: Path
+    presentation_path: Path

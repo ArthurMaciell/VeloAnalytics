@@ -1,5 +1,5 @@
 from src.utils import read_yaml, create_directories
-from src.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig
+from src.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, DataModellingConfig
 from pathlib import Path
 
 class ConfigurationManager:
@@ -64,3 +64,17 @@ class ConfigurationManager:
             output_path=Path(config.output_path)
         )
         return data_transformation_config
+
+    def get_data_modelling_config(self) -> DataModellingConfig:
+        """
+        Extracts the data modelling configuration from the main config file.
+        """
+        config = self.config.data_modelling
+        create_directories([Path(config.root_dir), Path(config.presentation_path)])
+
+        data_modelling_config = DataModellingConfig(
+            root_dir=Path(config.root_dir),
+            processed_data_path=Path(config.processed_data_path),
+            presentation_path=Path(config.presentation_path)
+        )
+        return data_modelling_config

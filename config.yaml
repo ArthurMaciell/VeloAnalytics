@@ -21,10 +21,10 @@ data_transformation:
   output_path: data/02_processed
 
 # Configuration for the Data Modeling stage
-data_modeling:
-  root_dir: artifacts/data_modeling
-  data_path: data/02_processed # Input: clean data
-  output_path: data/03_presentation # Output: final fact and dimension tables
+data_modelling:
+  root_dir: artifacts/data_modelling
+  processed_data_path: data/02_processed
+  presentation_path: data/03_presentation
 
 # Configuration for the main data pipeline directories
 data_pipeline:

@@ -121,6 +121,26 @@ COLUMNS:
     BILLINGSTATUS: str
     DELIVERYSTATUS: str
 
+# --- NEW SECTION ---
+# Defines the primary key(s) for each table to check for duplicates.
+# Use a list for composite keys.
+PRIMARY_KEYS:
+  Addresses: ADDRESSID
+  BusinessPartners: PARTNERID
+  Employees: EMPLOYEEID
+  ProductCategories: PRODCATEGORYID
+  Products: PRODUCTID
+  SalesOrders: SALESORDERID
+  SalesOrderItems:
+    - SALESORDERID
+    - SALESORDERITEM
+  ProductCategoryText:
+    - PRODCATEGORYID
+    - LANGUAGE
+  ProductTexts:
+    - PRODUCTID
+    - LANGUAGE
+
 TARGET_COLUMN:
   # This section would be used for machine learning models,
   # but we can leave it empty for this BI project.
