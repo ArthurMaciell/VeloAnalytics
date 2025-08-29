@@ -5,26 +5,20 @@ import os
 from pathlib import Path
 
 # --- PAGE CONFIGURATION ---
-# This must be the first Streamlit command in your script.
 st.set_page_config(
     page_title="VeloNorth Analytics Dashboard",
-    page_icon=":bike:",
+    page_icon="🚲",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # --- PATHS ---
-# Define the path to the presentation data directory.
 PRESENTATION_DIR = Path(__file__).resolve().parent.parent / "data" / "03_presentation"
 
 # --- DATA LOADING ---
-# A professional practice is to cache the data loading to improve performance.
 @st.cache_data
 def load_data():
-    """
-    Loads all necessary parquet files from the presentation layer.
-    Returns a dictionary of dataframes.
-    """
+    """Loads all necessary parquet files from the presentation layer."""
     data_files = {
         "fact_sales": "fact_sales.parquet",
         "dim_customer": "dim_customer.parquet",
@@ -41,7 +35,6 @@ def load_data():
             st.error(f"Data file not found: {file_name}")
             return None
             
-    # Convert date columns to datetime objects for proper filtering and plotting
     df_dict['fact_sales']['OrderDate'] = pd.to_datetime(df_dict['fact_sales']['OrderDate'])
     df_dict['dim_date']['Date'] = pd.to_datetime(df_dict['dim_date']['Date'])
     
@@ -57,71 +50,66 @@ if dataframes:
     dim_date = dataframes["dim_date"]
 
     # --- SIDEBAR ---
-    # The sidebar is used for filters.
-    st.sidebar.image("logo.png", width=150) # Make sure you have a logo.png file
+    st.sidebar.image("logo.png", width=150)
+    st.sidebar.header("VeloNorth Analytics")
     st.sidebar.title("Dashboard Filters")
 
-    # Date Range Filter
-    min_date = dim_date['Date'].min().date()
-    max_date = dim_date['Date'].max().date()
-    
-    date_range = st.sidebar.date_input(
-        "Select Date Range",
-        value=(min_date, max_date),
-        min_value=min_date,
-        max_value=max_date,
-    )
+    min_date, max_date = dim_date['Date'].min().date(), dim_date['Date'].max().date()
+    date_range = st.sidebar.date_input("Select Date Range", value=(min_date, max_date), min_value=min_date, max_value=max_date)
 
-    # Country Filter (Multiselect)
     all_countries = sorted(dim_customer['COUNTRY'].unique())
-    selected_countries = st.sidebar.multiselect(
-        "Select Country",
-        options=all_countries,
-        default=all_countries
-    )
+    selected_countries = st.sidebar.multiselect("Select Country", options=all_countries, default=all_countries)
 
-    # Product Category Filter
-    all_categories = sorted(dim_product['SHORT_DESCR_y'].unique())
-    selected_categories = st.sidebar.multiselect(
-        "Select Product Category",
-        options=all_categories,
-        default=all_categories
-    )
+    if 'SHORT_DESCR_y' in dim_product.columns:
+        all_categories = sorted(dim_product['SHORT_DESCR_y'].unique())
+        selected_categories = st.sidebar.multiselect("Select Product Category", options=all_categories, default=all_categories)
+    else:
+        selected_categories = []
+
+    partner_role_map = {'1': 'Reseller', '2': 'Direct Customer'}
+    dim_customer['Channel'] = dim_customer['PARTNERROLE'].map(partner_role_map).fillna('Unknown')
+    all_channels = sorted(dim_customer['Channel'].unique())
+    selected_channels = st.sidebar.multiselect("Select Sales Channel", options=all_channels, default=all_channels)
 
     # --- FILTERING DATA ---
-    # Apply filters to the fact table based on user selections.
     start_date, end_date = date_range
+    status_col_case_insensitive = next((col for col in fact_sales.columns if col.lower() == 'lifecyclestatus'), None)
     
-    filtered_sales = fact_sales[
-        (fact_sales['OrderDate'].dt.date >= start_date) &
-        (fact_sales['OrderDate'].dt.date <= end_date)
-    ]
+    if not status_col_case_insensitive:
+        st.error("LifecycleStatus column not found. Please re-run the data pipeline.")
+        st.stop()
+        
+    filtered_sales = fact_sales[(fact_sales['OrderDate'].dt.date >= start_date) & (fact_sales['OrderDate'].dt.date <= end_date)]
     
-    # Merge with dimensions to get filterable columns
-    filtered_sales = pd.merge(filtered_sales, dim_customer[['PARTNERID', 'COUNTRY']], on='PARTNERID', how='left')
-    filtered_sales = pd.merge(filtered_sales, dim_product[['PRODUCTID', 'SHORT_DESCR_y']], on='PRODUCTID', how='left')
+    filtered_sales = pd.merge(filtered_sales, dim_customer[['PARTNERID', 'COUNTRY', 'Channel', 'COMPANYNAME']], on='PARTNERID', how='left')
     
+    if 'SHORT_DESCR_y' in dim_product.columns:
+        filtered_sales = pd.merge(filtered_sales, dim_product[['PRODUCTID', 'SHORT_DESCR_y']], on='PRODUCTID', how='left')
+        if selected_categories:
+            filtered_sales = filtered_sales[filtered_sales['SHORT_DESCR_y'].isin(selected_categories)]
+
     if selected_countries:
         filtered_sales = filtered_sales[filtered_sales['COUNTRY'].isin(selected_countries)]
-    
-    if selected_categories:
-        filtered_sales = filtered_sales[filtered_sales['SHORT_DESCR_y'].isin(selected_categories)]
+    if selected_channels:
+        filtered_sales = filtered_sales[filtered_sales['Channel'].isin(selected_channels)]
 
     # --- MAIN PAGE ---
-    st.title(" VeloNorth Sales Analytics Dashboard")
+    st.title("VeloNorth Sales Analytics Dashboard")
     st.markdown("---")
 
-    # --- KPIs ---
-    total_revenue = filtered_sales['GROSSAMOUNT'].sum()
-    total_orders = filtered_sales['SALESORDERID'].nunique()
+    # --- KPIs based on Completed Sales ---
+    completed_sales = filtered_sales[filtered_sales[status_col_case_insensitive] == 'C']
+
+    total_revenue = completed_sales['NETAMOUNT'].sum()
+    total_orders = completed_sales['SALESORDERID'].nunique()
     avg_order_value = total_revenue / total_orders if total_orders > 0 else 0
-    total_quantity = filtered_sales['QUANTITY'].sum()
+    total_quantity = completed_sales['QUANTITY'].sum()
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    kpi1.metric(label="Total Revenue", value=f"${total_revenue:,.2f}")
-    kpi2.metric(label="Total Orders", value=f"{total_orders:,}")
+    kpi1.metric(label="Total Net Revenue (Completed)", value=f"${total_revenue:,.2f}")
+    kpi2.metric(label="Total Completed Orders", value=f"{total_orders:,}")
     kpi3.metric(label="Avg. Order Value", value=f"${avg_order_value:,.2f}")
-    kpi4.metric(label="Total Quantity Sold", value=f"{total_quantity:,}")
+    kpi4.metric(label="Total Quantity Sold (Completed)", value=f"{total_quantity:,}")
     
     st.markdown("---")
 
@@ -129,52 +117,57 @@ if dataframes:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Revenue by Product Category")
-        revenue_by_category = filtered_sales.groupby('SHORT_DESCR_y')['GROSSAMOUNT'].sum().sort_values(ascending=False).reset_index()
-        fig_cat = px.bar(
-            revenue_by_category,
-            x='GROSSAMOUNT',
-            y='SHORT_DESCR_y',
-            orientation='h',
-            title='Top Product Categories by Revenue',
-            labels={'GROSSAMOUNT': 'Total Revenue ($)', 'SHORT_DESCR_y': 'Product Category'},
-            template='plotly_white'
-        )
-        fig_cat.update_layout(yaxis={'categoryorder':'total ascending'})
-        st.plotly_chart(fig_cat, use_container_width=True)
+        st.subheader("Net Revenue by Product Category")
+        if 'SHORT_DESCR_y' in filtered_sales.columns:
+            revenue_by_category = filtered_sales.groupby('SHORT_DESCR_y')['NETAMOUNT'].sum().sort_values(ascending=False).reset_index()
+            fig_cat = px.bar(
+                revenue_by_category.head(10), x='NETAMOUNT', y='SHORT_DESCR_y', orientation='h',
+                labels={'NETAMOUNT': 'Total Net Revenue ($)', 'SHORT_DESCR_y': 'Product Category'}, template='plotly_white'
+            )
+            fig_cat.update_layout(yaxis={'categoryorder':'total ascending'}, title_text='Top 10 Product Categories by Net Revenue')
+            st.plotly_chart(fig_cat, use_container_width=True)
+        else:
+            st.warning("Product Category information not available.")
 
     with col2:
-        st.subheader("Revenue by Country")
-        revenue_by_country = filtered_sales.groupby('COUNTRY')['GROSSAMOUNT'].sum().sort_values(ascending=False).reset_index()
-        fig_country = px.pie(
-            revenue_by_country,
-            values='GROSSAMOUNT',
-            names='COUNTRY',
-            title='Revenue Distribution by Country',
-            hole=.3,
-            template='plotly_white'
+        st.subheader("Net Revenue by Sales Channel")
+        revenue_by_channel = filtered_sales.groupby('Channel')['NETAMOUNT'].sum().reset_index()
+        fig_channel = px.pie(
+            revenue_by_channel, values='NETAMOUNT', names='Channel',
+            title='Net Revenue Distribution by Sales Channel', hole=.4, template='plotly_white'
         )
-        st.plotly_chart(fig_country, use_container_width=True)
+        st.plotly_chart(fig_channel, use_container_width=True)
 
-    st.markdown("### Sales Trend Over Time")
-    # Resample data for time series analysis
-    sales_over_time = filtered_sales.set_index('OrderDate').resample('M')['GROSSAMOUNT'].sum().reset_index()
+    st.markdown("### Monthly Net Revenue Trend")
+    sales_over_time = filtered_sales.set_index('OrderDate').resample('ME')['NETAMOUNT'].sum().reset_index()
     fig_time = px.line(
-        sales_over_time,
-        x='OrderDate',
-        y='GROSSAMOUNT',
-        title='Monthly Sales Revenue',
-        labels={'GROSSAMOUNT': 'Total Revenue ($)', 'OrderDate': 'Month'},
-        template='plotly_white'
+        sales_over_time, x='OrderDate', y='NETAMOUNT',
+        title='Monthly Net Revenue', labels={'NETAMOUNT': 'Total Net Revenue ($)', 'OrderDate': 'Month'}, template='plotly_white'
     )
+    fig_time.update_yaxes(rangemode="tozero")
     st.plotly_chart(fig_time, use_container_width=True)
-
-    # --- DATA TABLE ---
-    st.markdown("### Detailed Sales Data")
-    # Show a sample of the detailed, filtered data
-    st.dataframe(filtered_sales.head(100))
+    
+    st.markdown("---")
+    
+    # --- DETAILED ANALYSIS ROW ---
+    col3, col4 = st.columns(2)
+    
+    with col3:
+        st.subheader("Top 10 Customers by Net Revenue")
+        top_customers = filtered_sales.groupby('COMPANYNAME')['NETAMOUNT'].sum().sort_values(ascending=False).reset_index().head(10)
+        st.dataframe(top_customers)
+        
+    with col4:
+        st.subheader("Order Status Analysis")
+        status_counts = filtered_sales.groupby(status_col_case_insensitive)['SALESORDERID'].nunique().reset_index()
+        status_counts.rename(columns={'SALESORDERID': 'Order Count', status_col_case_insensitive: 'Lifecycle Status'}, inplace=True)
+        fig_status = px.bar(
+            status_counts, x='Lifecycle Status', y='Order Count',
+            title='Order Count by Lifecycle Status', labels={'Lifecycle Status': 'Status Code', 'Order Count': 'Number of Orders'},
+            template='plotly_white', text='Order Count'
+        )
+        st.plotly_chart(fig_status, use_container_width=True)
 
 else:
     st.warning("Data could not be loaded. Please ensure the data pipeline has been run successfully.")
-
 
