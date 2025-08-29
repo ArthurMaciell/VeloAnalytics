@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from pathlib import Path
-from src.logging import logger
+from src.logger_config import logger
 from src.entity.config_entity import DataTransformationConfig
 from src.utils import read_yaml
 
@@ -18,8 +18,7 @@ class DataTransformation:
         """
         Private helper method to apply cleaning and transformations to a dataframe.
         """
-        # --- NEW: Select only the columns defined in the schema ---
-        # This proactively drops any unexpected columns like "Unnamed: 13"
+        # --- Select only the columns defined in the schema ---
         df = df[list(file_schema.keys())].copy()
         
         # --- Drop Duplicates based on Primary Key defined in schema.yaml ---
@@ -37,11 +36,16 @@ class DataTransformation:
         # --- Enforce Data Types based on schema.yaml ---
         for col, dtype in file_schema.items():
             if col in df.columns:
-                if 'date' in col.lower() or 'at' in col.lower():
+                # --- ROBUST FIX: Check if column name ENDS with 'date' or 'at' ---
+                if col.lower().endswith('date') or col.lower().endswith('at'):
                     df[col] = pd.to_datetime(df[col], format='%Y%m%d', errors='coerce')
                 else:
                     df[col] = df[col].astype(dtype, errors='ignore')
         
+        # --- NEW: Convert whitespace-only strings to proper null values ---
+        # This will fix issues like the NOTEID column.
+        df = df.replace(r'^\s*$', pd.NA, regex=True)
+
         # --- Handle Missing Values ---
         for col in df.select_dtypes(include=['number']).columns:
             df[col] = df[col].fillna(0)

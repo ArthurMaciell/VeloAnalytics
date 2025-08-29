@@ -5,7 +5,7 @@ from typing import List
 from box import ConfigBox
 from box.exceptions import BoxValueError
 from ensure import ensure_annotations
-from src.logging import logger # CORRECTED: Importing from our logging module
+from src.logger_config import logger # CORRECTED: Importing from our logging module
 
 # --- File Operations ---
 

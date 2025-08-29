@@ -1,6 +1,6 @@
 from src.config.configuration import ConfigurationManager
 from src.components.data_transformation import DataTransformation
-from src.logging import logger
+from src.logger_config import logger
 
 STAGE_NAME = "Data Transformation Stage"
 

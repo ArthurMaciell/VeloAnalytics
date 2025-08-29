@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from src.logging import logger
+from src.logger_config import logger
 from src.entity.config_entity import DataValidationConfig
 
 class DataValidation:
