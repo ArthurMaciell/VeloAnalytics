@@ -18,45 +18,6 @@ All relationships are **one-to-many (1–*)**, flowing from the dimension tables
 
 ---
 
-## Entity-Relationship Diagram (Sketch)
-
-
-+-----------------+      +-----------------+      +-----------------+
-|   dim_date      |      |  dim_employee   |      |  dim_customer   |
-|-----------------|      |-----------------|      |-----------------|
-| PK | Date       | 1--* | PK | EMPLOYEEID | 1--* | PK | PARTNERID  |
-|    | Year       |      |    | NAME_FIRST |      |    | COMPANYNAME|
-|    | Month      |      |    | NAME_LAST  |      |    | COUNTRY    |
-|    | Quarter    |      |    |EMAILADDRESS|      |    | CITY       |
-|    | DayOfWeek  |      |    | ...        |      |    | ...        |
-+-----------------+      +-----------------+      +-----------------+
-        |                      |                      |
-        |                      |                      |
-+-------------------------------------------------------------------+
-|                            fact_sales                             |
-|-------------------------------------------------------------------|
-| FK | OrderDate                                                    |
-| FK | EMPLOYEEID                                                   |
-| FK | PARTNERID                                                    |
-| FK | PRODUCTID                                                    |
-|    | GROSSAMOUNT (Measure)                                        |
-|    | NETAMOUNT (Measure)                                          |
-|    | QUANTITY (Measure)                                           |
-|    | LIFECYCLESTATUS                                              |
-|    | ...                                                          |
-+-------------------------------------------------------------------+
-                               |
-                               |
-                      +-----------------+
-                      |   dim_product   |
-                      |-----------------|
-                      | PK | PRODUCTID  |
-                      |    | SHORT_DESCR|
-                      |    | CATEGORY   |
-                      |    | PRICE      |
-                      |    | ...        |
-                      +-----------------+
-
 
 ## Table Definitions
 
