@@ -8,7 +8,7 @@ It ensures consistency and provides a **single source of truth** for all busines
 ## 1. Total Net Revenue (Completed Sales)
 
 **Business Definition:**  
-The total net revenue (excluding taxes) generated from sales orders that have a `LIFECYCLESTATUS = 'C'` (Completed).  
+The total net revenue (excluding taxes) generated from sales orders that have a `LifecycleStatus = 'C'` (Completed).  
 This represents the actual, recognized revenue.
 
 **DAX (Power BI):**
@@ -16,13 +16,13 @@ This represents the actual, recognized revenue.
 Total Net Revenue = 
 CALCULATE(
     SUM(fact_sales[NETAMOUNT]),
-    fact_sales[LIFECYCLESTATUS] = "C"
+    fact_sales[LifecycleStatus] = "C"
 )
 ```
 
 **Python (Streamlit):**
 ```python
-completed_sales = filtered_sales[filtered_sales['LIFECYCLESTATUS'] == 'C']
+completed_sales = filtered_sales[filtered_sales['LifecycleStatus'] == 'C']
 total_revenue = completed_sales['NETAMOUNT'].sum()
 ```
 
@@ -31,20 +31,20 @@ total_revenue = completed_sales['NETAMOUNT'].sum()
 ## 2. Total Completed Orders
 
 **Business Definition:**  
-The total count of unique sales orders that have a `LIFECYCLESTATUS = 'C'` (Completed).
+The total count of unique sales orders that have a `LifecycleStatus = 'C'` (Completed).
 
 **DAX (Power BI):**
 ```DAX
 Total Completed Orders = 
 CALCULATE(
     DISTINCTCOUNT(fact_sales[SALESORDERID]),
-    fact_sales[LIFECYCLESTATUS] = "C"
+    fact_sales[LifecycleStatus] = "C"
 )
 ```
 
 **Python (Streamlit):**
 ```python
-completed_sales = filtered_sales[filtered_sales['LIFECYCLESTATUS'] == 'C']
+completed_sales = filtered_sales[filtered_sales['LifecycleStatus'] == 'C']
 total_orders = completed_sales['SALESORDERID'].nunique()
 ```
 
@@ -82,13 +82,13 @@ The total number of individual items sold across all completed orders.
 Total Quantity Sold = 
 CALCULATE(
     SUM(fact_sales[QUANTITY]),
-    fact_sales[LIFECYCLESTATUS] = "C"
+    fact_sales[LifecycleStatus] = "C"
 )
 ```
 
 **Python (Streamlit):**
 ```python
-completed_sales = filtered_sales[filtered_sales['LIFECYCLESTATUS'] == 'C']
+completed_sales = filtered_sales[filtered_sales['LifecycleStatus'] == 'C']
 total_quantity = completed_sales['QUANTITY'].sum()
 ```
 
