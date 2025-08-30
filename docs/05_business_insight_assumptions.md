@@ -1,69 +1,70 @@
-# VeloNorth - Business Insights & Key Assumptions
+# VeloNorth - Sales Analytics Dashboards
 
-This document explains the key business insights that the **VeloNorth Analytics Dashboard** is designed to deliver.  
-It also outlines the key assumptions made during the data modelling and analysis process.
-
----
-
-## Business Insights Delivered by the Dashboard
-
-The dashboard is designed to move beyond raw data and provide **actionable insights** for key business areas, including sales strategy, product management, and operational efficiency.
+This section summarizes the business insights delivered by the two dashboards developed (Power BI prototype and Streamlit app).  
+Each dashboard was designed to answer key business questions from different perspectives: **executive overview** and **detailed analytics**.
 
 ---
 
-### Overall Business Performance at a Glance
-- **Insight:** Provides an immediate, high-level understanding of the company's health.  
-- **How:** KPI cards (`Total Net Revenue`, `Total Completed Orders`, `Average Order Value`) offer a real-time snapshot of performance, allowing leadership to quickly assess if the business is on track.
+## 📊 Dashboard 1 — Executive Sales Overview (Power BI)
+
+**Purpose:** Provide leadership with a quick and reliable view of the company’s sales performance.  
+
+### Key Insights
+- **Revenue Performance**  
+  - Total Net Revenue (Completed Sales): **$3.02M**  
+  - Gross Amount: **$3.46M**  
+  - Tax Amount: **$432K**  
+
+- **Sales Efficiency**  
+  - Conversion Rate (Orders): **93.1%**  
+  - Conversion Rate (USD): **93.9%**  
+  - Average Ticket: **$9.7K**  
+
+- **Customer and Employee Contributions**  
+  - Top Customers: *Bike World Inc*, *Move by Bike*, *Cycle World* (together over $400K).  
+  - Top Employees: *Mussen*, *Hegde*, *Egger*, driving most of the revenue.  
+
+- **Order Lifecycle Analysis**  
+  - Completed Orders: **311**  
+  - In Progress: **20 ($150K)**  
+  - Cancelled: **3 ($40K lost revenue)**  
+
+- **Growth Monitoring**  
+  - Monthly revenue and order trends clearly show seasonality and fluctuations.  
+  - Last Month Revenue: **$197K**, showing positive growth.  
 
 ---
 
-### Sales Seasonality and Growth Trends
-- **Insight:** Identifies patterns in sales over time, such as peak months or periods of growth/decline.  
-- **How:** The **Sales Trend Over Time** line chart visualizes monthly revenue, making it easy to spot seasonality. This supports marketing planning and inventory management for high-demand periods.
+## 📊 Dashboard 2 — Revenue Breakdown & Customer Insights (Streamlit)
+
+**Purpose:** Provide a deeper, interactive view of sales by products, categories, customers, and regions.  
+
+### Key Insights
+- **Product & Category Performance**  
+  - Top product categories: *Veloflash*, *Speedeon*, *Stream I* leading revenue generation.  
+  - Helps prioritize marketing campaigns and manage inventory.  
+
+- **Sales Channel Effectiveness**  
+  - Revenue split: **52.7% Direct Customers** vs **47.3% Resellers**.  
+  - Insight: balanced channel contribution → opportunity to push growth in the reseller base.  
+
+- **Customer Value**  
+  - *Top 10 Customers by Revenue* dashboard identifies key accounts for loyalty programs.  
+  - Clear evidence of revenue concentration — classic Pareto effect (20% customers = majority of revenue).  
+
+- **Geographic Insights**  
+  - Country filters reveal strong demand in specific regions (Germany, Canada, US).  
+  - Supports planning for market expansion.  
+
+- **Order Status Monitoring**  
+  - Lifecycle status visualization (C/I/X) highlights where orders get blocked or lost.  
+  - Insight: ~$40K lost in cancelled orders, potential process improvement opportunity.  
 
 ---
 
-### Top-Performing Products and Categories
-- **Insight:** Pinpoints which products and categories are the main drivers of revenue.  
-- **How:** The **Revenue by Product Category** bar chart ranks categories by sales. This enables the business to focus marketing, manage stock for popular items, and identify underperforming product lines.
+## 🎯 Conclusion
 
----
+- **Dashboard 1 (Executive Overview)** → answers “How are we performing overall? Are we growing? Who are our top customers and employees?”.  
+- **Dashboard 2 (Detailed Insights)** → answers “Which products, channels, and regions drive revenue? Where are we losing sales? Who are our most valuable customers?”.  
 
-### Key Geographic Markets
-- **Insight:** Identifies the most profitable countries and regions.  
-- **How:** Interactive filters and charts allow users to drill down into geographic areas. This helps prioritize sales efforts in high-performing regions and uncover potential markets for expansion.
-
----
-
-### High-Value Customer Identification
-- **Insight:** Determines which customers are most valuable to the business.  
-- **How:** The **Top 10 Customers by Revenue** table provides an instant list of key accounts. This enables sales teams to design loyalty programs and targeted retention strategies.
-
----
-
-### Sales Channel Effectiveness
-- **Insight:** Compares the performance of different sales channels (e.g., direct customers vs. resellers).  
-- **How:** The **Revenue by Sales Channel** chart breaks down revenue by `PARTNERROLE`, helping leadership identify the most effective channels and optimize sales strategy accordingly.
-
----
-
-## Key Assumptions
-
-The analysis and the data model were built upon the following assumptions:
-
-1. **Source of Truth for Financials:**  
-   - The `SalesOrderItems` (line item) table is the **single source of truth** for financial calculations.  
-   - Pre-aggregated totals in the `SalesOrders` (header) table were considered unreliable and intentionally excluded from revenue metrics.
-
-2. **Definition of a Completed Sale:**  
-   - KPIs and financial charts are based on the assumption that `LIFECYCLESTATUS = 'C'` indicates a fully completed and recognized sale.
-
-3. **Sales Channel Interpretation:**  
-   - The `PARTNERROLE` column in `BusinessPartners` represents the sales channel:  
-     - `1` = **Reseller**  
-     - `2` = **Direct Customer**
-
-4. **Data Completeness:**  
-   - The nine provided CSV files are assumed to represent a complete and accurate snapshot of business operations for the given time period.
-
----
+Together, these dashboards provide both **strategic visibility** and **tactical detail** — enabling leadership to monitor performance while allowing BI teams to dig into the drivers of sales outcomes.

@@ -113,7 +113,7 @@ if rates and dataframes:
     status_col_case_insensitive = next((col for col in fact_sales.columns if col.lower() == 'lifecyclestatus'), None)
     
     if not status_col_case_insensitive:
-        st.error("LifecycleStatus column not found. Please re-run the data pipeline.")
+        st.error("lifecyclestatus column not found. Please re-run the data pipeline.")
         st.stop()
         
     filtered_sales = fact_sales[(fact_sales['OrderDate'].dt.date >= start_date) & (fact_sales['OrderDate'].dt.date <= end_date)]
@@ -163,10 +163,10 @@ if rates and dataframes:
     total_quantity = completed_sales['QUANTITY'].sum()
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    kpi1.metric(label="Total Net Revenue", value=f"{currency_symbol}{total_revenue:,.2f}")
+    kpi1.metric(label="Total Net Revenue (Completed)", value=f"{currency_symbol}{total_revenue:,.2f}")
     kpi2.metric(label="Total Completed Orders", value=f"{total_orders:,}")
     kpi3.metric(label="Avg. Order Value", value=f"{currency_symbol}{avg_order_value:,.2f}")
-    kpi4.metric(label="Total Quantity Sold", value=f"{total_quantity:,}")
+    kpi4.metric(label="Total Quantity Sold (Completed)", value=f"{total_quantity:,}")
     
     st.markdown("---")
 
@@ -176,7 +176,8 @@ if rates and dataframes:
     with col1:
         st.subheader("Net Revenue by Product Category")
         if 'SHORT_DESCR_y' in filtered_sales.columns:
-            revenue_by_category = filtered_sales.groupby('SHORT_DESCR_y')['ConvertedNetAmount'].sum().sort_values(ascending=False).reset_index()
+            # CORRECTED: Use completed_sales for consistency
+            revenue_by_category = completed_sales.groupby('SHORT_DESCR_y')['ConvertedNetAmount'].sum().sort_values(ascending=False).reset_index()
             fig_cat = px.bar(
                 revenue_by_category.head(10), x='ConvertedNetAmount', y='SHORT_DESCR_y', orientation='h',
                 labels={'ConvertedNetAmount': f'Total Net Revenue ({currency_symbol})', 'SHORT_DESCR_y': 'Product Category'}, template='plotly_white'
@@ -188,7 +189,8 @@ if rates and dataframes:
 
     with col2:
         st.subheader("Net Revenue by Sales Channel")
-        revenue_by_channel = filtered_sales.groupby('Channel')['ConvertedNetAmount'].sum().reset_index()
+        # CORRECTED: Use completed_sales for consistency
+        revenue_by_channel = completed_sales.groupby('Channel')['ConvertedNetAmount'].sum().reset_index()
         fig_channel = px.pie(
             revenue_by_channel, values='ConvertedNetAmount', names='Channel',
             title='Net Revenue Distribution by Sales Channel', hole=.4, template='plotly_white'
@@ -196,7 +198,8 @@ if rates and dataframes:
         st.plotly_chart(fig_channel, use_container_width=True)
 
     st.markdown("### Monthly Net Revenue Trend")
-    sales_over_time = filtered_sales.set_index('OrderDate').resample('ME')['ConvertedNetAmount'].sum().reset_index()
+    # CORRECTED: Use completed_sales for consistency
+    sales_over_time = completed_sales.set_index('OrderDate').resample('ME')['ConvertedNetAmount'].sum().reset_index()
     fig_time = px.line(
         sales_over_time, x='OrderDate', y='ConvertedNetAmount',
         title='Monthly Net Revenue', labels={'ConvertedNetAmount': f'Total Net Revenue ({currency_symbol})', 'OrderDate': 'Month'}, template='plotly_white'
@@ -211,11 +214,13 @@ if rates and dataframes:
     
     with col3:
         st.subheader("Top 10 Customers by Net Revenue")
-        top_customers = filtered_sales.groupby('COMPANYNAME')['ConvertedNetAmount'].sum().sort_values(ascending=False).reset_index().head(10)
+        # CORRECTED: Use completed_sales DataFrame for consistency with KPIs
+        top_customers = completed_sales.groupby('COMPANYNAME')['ConvertedNetAmount'].sum().sort_values(ascending=False).reset_index().head(10)
         st.dataframe(top_customers)
         
     with col4:
         st.subheader("Order Status Analysis")
+        # This chart intentionally uses all filtered_sales to show the full status picture
         status_counts = filtered_sales.groupby(status_col_case_insensitive)['SALESORDERID'].nunique().reset_index()
         status_counts.rename(columns={'SALESORDERID': 'Order Count', status_col_case_insensitive: 'Lifecycle Status'}, inplace=True)
         fig_status = px.bar(
