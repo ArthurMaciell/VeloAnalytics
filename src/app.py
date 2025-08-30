@@ -85,6 +85,15 @@ if rates and dataframes:
     min_date, max_date = dim_date['Date'].min().date(), dim_date['Date'].max().date()
     date_range = st.sidebar.date_input("Select Date Range", value=(min_date, max_date), min_value=min_date, max_value=max_date)
 
+    # --- NEW: Employee Filter ---
+    dim_employee['FullName'] = dim_employee['NAME_FIRST'] + ' ' + dim_employee['NAME_LAST']
+    all_employees = sorted(dim_employee['FullName'].unique())
+    selected_employees = st.sidebar.multiselect("Select Employee", options=all_employees, default=all_employees)
+
+    # --- NEW: Company Filter ---
+    all_companies = sorted(dim_customer['COMPANYNAME'].unique())
+    selected_companies = st.sidebar.multiselect("Select Company", options=all_companies, default=all_companies)
+
     all_countries = sorted(dim_customer['COUNTRY'].unique())
     selected_countries = st.sidebar.multiselect("Select Country", options=all_countries, default=all_countries)
 
@@ -109,8 +118,10 @@ if rates and dataframes:
         
     filtered_sales = fact_sales[(fact_sales['OrderDate'].dt.date >= start_date) & (fact_sales['OrderDate'].dt.date <= end_date)]
     
+    # Merge with dimensions to get filterable columns
     filtered_sales = pd.merge(filtered_sales, dim_customer[['PARTNERID', 'COUNTRY', 'Channel', 'COMPANYNAME']], on='PARTNERID', how='left')
-    
+    filtered_sales = pd.merge(filtered_sales, dim_employee[['EMPLOYEEID', 'FullName']], on='EMPLOYEEID', how='left') # Merge employee info
+
     if 'SHORT_DESCR_y' in dim_product.columns:
         filtered_sales = pd.merge(filtered_sales, dim_product[['PRODUCTID', 'SHORT_DESCR_y']], on='PRODUCTID', how='left')
         if selected_categories:
@@ -120,6 +131,13 @@ if rates and dataframes:
         filtered_sales = filtered_sales[filtered_sales['COUNTRY'].isin(selected_countries)]
     if selected_channels:
         filtered_sales = filtered_sales[filtered_sales['Channel'].isin(selected_channels)]
+    
+    # --- NEW: Apply Employee and Company Filters ---
+    if selected_employees:
+        filtered_sales = filtered_sales[filtered_sales['FullName'].isin(selected_employees)]
+    if selected_companies:
+        filtered_sales = filtered_sales[filtered_sales['COMPANYNAME'].isin(selected_companies)]
+
 
     # --- DYNAMIC CURRENCY CONVERSION ---
     def convert_currency(row):
@@ -208,5 +226,5 @@ if rates and dataframes:
         st.plotly_chart(fig_status, use_container_width=True)
 
 else:
-    st.warning("Data could not be loaded. Please ensure the data pipeline has been run successfully.")
+    st.warning("Data could not be loaded or exchange rates could not be fetched. Please check your connection and ensure the data pipeline has been run successfully.")
 

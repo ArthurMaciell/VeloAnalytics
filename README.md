@@ -22,9 +22,9 @@ The solution follows professional **software engineering** and **data engineerin
 ## 🛠️ Tech Stack
 - **Language**: Python 3.9+  
 - **Data Processing**: pandas  
-- **Dashboard**: Streamlit, Plotly  
+- **Dashboard**: Streamlit 
 - **Prototyping**: Power BI  
-- **Core Libraries**: python-box, ensure, nbformat, requests  
+- **Core Libraries**: python-box, ensure, nbformat, requests, zipfile
 
 ---
 
