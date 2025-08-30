@@ -121,7 +121,6 @@ COLUMNS:
     BILLINGSTATUS: str
     DELIVERYSTATUS: str
 
-# --- NEW SECTION ---
 # Defines the primary key(s) for each table to check for duplicates.
 # Use a list for composite keys.
 PRIMARY_KEYS:
@@ -142,5 +141,4 @@ PRIMARY_KEYS:
     - LANGUAGE
 
 TARGET_COLUMN:
-  # This section would be used for machine learning models,
-  # but we can leave it empty for this BI project.
+  # This section would be used for machine learning models.
